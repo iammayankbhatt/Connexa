@@ -1,0 +1,67 @@
+# ===============================
+# Node / React
+# ===============================
+node_modules/
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+dist/
+build/
+
+# ===============================
+# Environment variables (CRITICAL)
+# ===============================
+.env
+.env.local
+.env.development
+.env.production
+
+# ===============================
+# Firebase
+# ===============================
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+
+# ===============================
+# Vercel
+# ===============================
+.vercel/
+
+# ===============================
+# OS / Editor junk
+# ===============================
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# ===============================
+# Misc
+# ===============================
+coverage/
+
+
+
+
+
+
+dist-ssr
+*.local
+
+# Editor directories and files
+
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
