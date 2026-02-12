@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-up</title>
+    <link rel="stylesheet" href="../style/registration.css">
+</head>
+<body>
+    <h1>Connexa</h1>
+    <p>Join the Student Community</p>
+    <section class="sign-up">
+        <form id="signupForm">
+            <h2>Create Account</h2>
+            <label for="name">Name</label>
+            <div class="input-box">
+                <span class="icon">👤</span>
+                <input type="text" placeholder="John" id="name" required>
+            </div>
+            <label for="email">Email</label>
+            <div class="input-box">
+                <span class="icon">✉️</span>
+                <input type="email" placeholder="john@gmail.com" id="email" required>
+            </div>
+            <label for="university">University</label>
+            <div class="input-box">
+                <span class="icon">🎓</span>
+                <input type="text" placeholder="Graphic Era Hill University" id="university" required>
+            </div>
+            <label for="password">Password</label>
+            <div class="input-box">
+                <span class="icon">🔒</span>
+                <input type="password" placeholder="Create a Password" id="password" required>
+            </div>
+            <label for="confirm">Confirm Password</label>
+            <div class="input-box">
+                 <span class="icon">🔐</span>
+                <input type="password" placeholder="Confirm your Password" id="confirm" required>
+            </div>
+            <div class="create-account">
+                <button type="submit" id="submit">Create Account</button>
+            </div>
+            <p class="notice">Already have a account? <a href="signin.html">sign in</a></p>
+        </form>
+    </section>
+    <script type="module" src="../script/register.js"></script>
+</body>
+</html>
