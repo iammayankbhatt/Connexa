@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { auth } from "../../firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 
 const Signup = () => {
   const [name, setName]=useState("")
@@ -10,24 +12,33 @@ const Signup = () => {
   const [password, setPassword]=useState("")
   const [confirm, setConfirm]=useState("")
 
-  function handleSignup(e){
-    e.preventDefault();
-    if(password != confirm){
-      alert("Password do not match");
-      return ;
-    }
+  async function handleSignup(e){
+  e.preventDefault();
 
-    createUserWithEmailAndPassword(auth,email,password)
-      .then((userCredential)=>{
-        const user = userCredential.user;
-        console.log("User created:",user);
-
-        window.location.href="/feed";
-      })
-      .catch((error)=>{
-        alert(error.message);
-      });
+  if(password !== confirm){
+    alert("Password do not match");
+    return;
   }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      name: name,
+      email: email,
+      university: university,
+      createdAt: new Date()
+    });
+
+    console.log("User created:", user);
+
+    window.location.href = "/feed";
+
+  } catch (error) {
+    alert(error.message);
+  }
+}
 
   return (
     <>
@@ -84,11 +95,11 @@ const Signup = () => {
             />
           </div>
 
-          <div class="create-account">
+          <div className="create-account">
             <button type="submit" id="submit">Create Account</button>
           </div>
 
-          <p class="notice">Already have a account? 
+          <p className="notice">Already have a account? 
             <Link to="/">sign in</Link>
           </p>
 

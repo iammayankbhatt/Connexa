@@ -1,103 +1,69 @@
 import React, { useState } from 'react';
 import '../../styles/feed.css';
 import CreatePost from '../../components/CreatePost';
-import  PostList from '../../components/PostList';
+import PostList from '../../components/PostList';
+import { Heart, MessageCircle, Share2, Send, Image as ImageIcon } from 'lucide-react';
 
-
-const mockPosts = [
-  {
-    id: '1',
-    author: {
-      name: 'Sarah Johnson',
-      avatar: 'SJ',
-      university: 'Stanford University',
-      major: 'Computer Science',
-    },
-    content:
-      'Just finished my final project for CS229! Machine learning is fascinating. Looking for collaborators on a side project involving NLP. Anyone interested? 🚀',
-    timestamp: '2h ago',
-    likes: 24,
-    liked: false,
-    comments: [
-      {
-        id: 'c1',
-        author: { name: 'Michael Chen', avatar: 'MC' },
-        content: "This sounds amazing! I'd love to collaborate.",
-        timestamp: '1h ago',
-      },
-      {
-        id: 'c2',
-        author: { name: 'Emma Davis', avatar: 'ED' },
-        content: 'Count me in! I have experience with transformers.',
-        timestamp: '45m ago',
-      },
-    ],
-  },
-  {
-    id: '2',
-    author: {
-      name: 'Alex Martinez',
-      avatar: 'AM',
-      university: 'MIT',
-      major: 'Electrical Engineering',
-    },
-    content:
-      'Attended an incredible robotics workshop today. The future of automation is here! Special thanks to Professor Williams for the insightful session.',
-    timestamp: '5h ago',
-    likes: 42,
-    liked: true,
-    comments: [],
-  },
-  {
-    id: '3',
-    author: {
-      name: 'Emily Brown',
-      avatar: 'EB',
-      university: 'Harvard University',
-      major: 'Business Administration',
-    },
-    content:
-      "Our startup just got accepted into Y Combinator! Still can't believe it. Looking for talented developers to join our team. DM me if interested! 💼",
-    timestamp: '1d ago',
-    likes: 156,
-    liked: false,
-    comments: [
-      {
-        id: 'c3',
-        author: { name: 'David Kim', avatar: 'DK' },
-        content: 'Congratulations! This is huge!',
-        timestamp: '20h ago',
-      },
-    ],
-  },
-];
+import { useEffect } from "react";
+import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp } from "firebase/firestore";
+import { db,auth } from "../../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export function Feed() {
-  const [posts, setPosts] = useState(mockPosts);
+  // const [posts, setPosts] = useState(mockPosts);
+  const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
 
-  const handleCreatePost = (e) => {
+  useEffect(() => {
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPosts(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
+  const handleCreatePost = async (e) => {
     e.preventDefault();
     if (!newPost.trim()) return;
 
+    const user = auth.currentUser;
+    if(!user){
+      alert("User not logged in");
+      return;
+    }
+
+    const userRef=doc(db, "users", user.uid);
+    const userSnap=await getDoc(userRef);
+    let userData={};
+    if(userSnap.exists()){
+      userData=userSnap.data();
+    }
+
     const post = {
-      id: Date.now().toString(),
       author: {
-        name: 'You',
-        avatar: 'YO',
-        university: 'Your University',
+        name: userData.name || "Unknown",
+        avatar:userData.name?.charAt(0)?.toUpperCase() ||user.email?.charAt(0)?.toUpperCase() ||"?",
+        university: userData.university ||"Unknown",
         major: 'Your Major',
       },
       content: newPost,
       timestamp: 'Just now',
+      createdAt: serverTimestamp(), // important for sorting
       likes: 0,
       liked: false,
       comments: [],
     };
 
-    setPosts([post, ...posts]);
+    await addDoc(collection(db, "posts"), post);
+
     setNewPost('');
   };
 
@@ -117,16 +83,17 @@ export function Feed() {
   };
 
   const handleComment = (postId) => {
-    const commentText = (commentInputs[postId] || '').trim();
+    const commentText = commentInputs?.[postId]?.trim();
+
     if (!commentText) return;
 
-    setPosts(
-      posts.map((post) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
         if (post.id === postId) {
           return {
             ...post,
             comments: [
-              ...post.comments,
+              ...(post.comments || []),
               {
                 id: Date.now().toString(),
                 author: { name: 'You', avatar: 'YO' },
@@ -140,7 +107,10 @@ export function Feed() {
       })
     );
 
-    setCommentInputs({ ...commentInputs, [postId]: '' });
+    // clear input
+    setCommentInputs((prev) => ({
+      ...prev,[postId]: '',
+    }));
   };
 
   const toggleComments = (postId) => {
@@ -153,6 +123,7 @@ export function Feed() {
         newPost={newPost}
         setNewPost={setNewPost}
         handleCreatePost={handleCreatePost}
+        ImageIcon={ImageIcon}
       />
       <PostList
         posts={posts}
@@ -162,9 +133,13 @@ export function Feed() {
         onLike={handleLike}
         onToggleComments={toggleComments}
         onComment={handleComment}
+        Heart={Heart}
+        MessageCircle={MessageCircle}
+        Share2={Share2}
+        Send={Send}
       />
     </div>
   );
 }
 
-export default Feed
+export default Feed;

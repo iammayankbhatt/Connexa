@@ -286,12 +286,14 @@
 .comment-input-wrapper {
   flex: 1;
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   align-items: center;
+  width:100px;
 }
 
 .comment-input {
   flex: 1;
+  /* min-width: 300px;  */
   padding: 0.5rem 0.875rem;
   border-radius: 9999px;
   border: 1px solid transparent;
@@ -308,7 +310,9 @@
 }
 
 .comment-send-button {
-  padding: 0.25rem;
+ 
+  padding:6px 12px;
+  white-space: nowrap;
   border-radius: 9999px;
   border: none;
   background: transparent;
@@ -319,6 +323,7 @@
 
 .comment-send-button:hover {
   background-color: #eff6ff;
+  
 }
 
 /* General */
@@ -330,3 +335,6 @@ textarea::placeholder,
 input::placeholder {
   color: #9ca3af;
 }
+
+
+

@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { auth } from "../firebase/firebase";
 
 const PostCard = ({
   post,
@@ -8,8 +9,12 @@ const PostCard = ({
   onLike,
   onToggleComments,
   onComment,
+  Heart,
+  MessageCircle,
+  Share2,
+  Send,
 }) => {
-    const handleChange = (e) => {
+  const handleChange = (e) => {
     setCommentInputs((prev) => ({
       ...prev,
       [post.id]: e.target.value,
@@ -21,17 +26,21 @@ const PostCard = ({
       e.preventDefault();
       onComment(post.id);
     }
-  }; 
-    
+  };
+
+  const currentUser = auth.currentUser;
+
   return (
     <div className="card post-card">
       {/* Post Header */}
       <div className="post-header">
-        <div className="avatar avatar-post">{post.author.avatar}</div>
+        <div className="avatar avatar-post">{post.author?.avatar || "?"}</div>
         <div className="post-header-info">
-          <h3 className="post-author-name">{post.author.name}</h3>
+          <h3 className="post-author-name">
+            {post.userId === currentUser?.uid ? "You" : post.author?.name || "Unknown"}
+          </h3>
           <p className="post-author-meta">
-            {post.author.major} • {post.author.university}
+            {post.author?.major || ""} • {post.author?.university || ""}
           </p>
           <p className="post-timestamp">{post.timestamp}</p>
         </div>
@@ -43,7 +52,7 @@ const PostCard = ({
       {/* Post Stats */}
       <div className="post-stats">
         <span>{post.likes} likes</span>
-        <span>{post.comments.length} comments</span>
+        <span>{post.comments?.length || 0} comments</span>
       </div>
 
       {/* Post Actions */}
@@ -54,15 +63,22 @@ const PostCard = ({
             post.liked ? 'like-button-active' : ''
           }`}
         >
+          {Heart && (
+            <Heart
+              className={`icon ${post.liked ? 'icon-heart-filled' : ''}`}
+            />
+          )}
           <span>Like</span>
         </button>
         <button
           onClick={() => onToggleComments(post.id)}
           className="post-action-button"
         >
+          {MessageCircle && <MessageCircle className="icon" />}
           <span>Comment</span>
         </button>
         <button className="post-action-button">
+          {Share2 && <Share2 className="icon" />}
           <span>Share</span>
         </button>
       </div>
@@ -71,15 +87,15 @@ const PostCard = ({
       {showComments && (
         <div className="comments-section">
           {/* Existing Comments */}
-          {post.comments.map((comment) => (
+          {(post.comments || []).map((comment) => (
             <div key={comment.id} className="comment-row">
               <div className="avatar avatar-comment">
-                {comment.author.avatar}
+                {comment.author?.avatar||"?"}
               </div>
               <div className="comment-body">
                 <div className="comment-content-wrapper">
                   <p className="comment-author-name">
-                    {comment.author.name}
+                    {comment.author?.name || "Unknown"}
                   </p>
                   <p className="comment-text">{comment.content}</p>
                 </div>
@@ -104,14 +120,14 @@ const PostCard = ({
                 onClick={() => onComment(post.id)}
                 className="comment-send-button"
               >
-                <span>Send</span>
+                {Send && <Send className="icon" />}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PostCard
+export default PostCard;

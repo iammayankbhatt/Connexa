@@ -22,12 +22,20 @@
 
 .text{
     text-decoration:none;
-    color:#2563eb;
+    color:#434a5a;
     font-size:18px;
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:10px;
     font-weight:500;
+}
+
+.text:hover{
+  background-color: #eff6ff;
+  border-radius: 10px;
+  /* height:205px; */
+  width:auto;
+  padding:5px;
 }
 
 .connexa{
