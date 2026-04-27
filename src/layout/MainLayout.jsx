@@ -1,14 +1,16 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
-import { Outlet } from "react-router-dom";
+import React from 'react';
+import Navbar from '../components/Navbar';
+import { Outlet } from 'react-router-dom';
 
 const MainLayout = () => {
   return (
     <div>
       <Navbar />
-      <Outlet />
+      <div className="main-content">
+        <Outlet />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default MainLayout
+export default MainLayout;

@@ -49,8 +49,8 @@ Thumbs.db
 # ===============================
 coverage/
 
-
-
+firebase/
+firebase.js
 
 
 
